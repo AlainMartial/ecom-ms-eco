@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 
 @SpringBootApplication
 public class CustomerServiceApplication {
@@ -21,5 +22,12 @@ public class CustomerServiceApplication {
             customerRepository.save(Customer.builder().name("Imane").email("imane@gmail.com").build());
             customerRepository.save(Customer.builder().name("Yassine").email("yassine@gmail.com").build());
         };
+    }
+
+    @Bean
+    public RepositoryRestConfigurer repositoryRestConfigurer() {
+        return RepositoryRestConfigurer.withConfig(config -> {
+            config.exposeIdsFor(Customer.class);
+        });
     }
 }

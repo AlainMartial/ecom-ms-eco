@@ -27,6 +27,7 @@ public class GatewayServiceApplication {
 
     @Bean
     DiscoveryClientRouteDefinitionLocator dynamicRoutes(ReactiveDiscoveryClient rdc, DiscoveryLocatorProperties dlp){
+        dlp.setLowerCaseServiceId(true);
         return new DiscoveryClientRouteDefinitionLocator(rdc, dlp);
     }
 

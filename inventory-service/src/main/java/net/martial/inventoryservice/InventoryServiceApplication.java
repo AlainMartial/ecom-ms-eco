@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 
 @SpringBootApplication
 public class InventoryServiceApplication {
@@ -21,6 +22,13 @@ public class InventoryServiceApplication {
             productRepository.save(Product.builder().name("printer").price(1200).quantity(10).build());
             productRepository.save(Product.builder().name("Smart Phone").price(11000).quantity(6).build());
         };
+    }
+
+    @Bean
+    public RepositoryRestConfigurer repositoryRestConfigurer() {
+        return RepositoryRestConfigurer.withConfig(config -> {
+            config.exposeIdsFor(Product.class);
+        });
     }
 
 }

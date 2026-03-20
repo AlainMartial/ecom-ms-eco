@@ -1,9 +1,11 @@
 package net.martial.billingservice.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
 import net.martial.billingservice.model.Product;
 
 @Entity
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class ProductItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
