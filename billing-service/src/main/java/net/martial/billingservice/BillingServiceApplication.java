@@ -36,7 +36,7 @@ public class BillingServiceApplication {
                     .getAllCustomers()
                     .getEmbedded()
                     .getCustomers();
-            Collection<Product> products = productRestClient.getAllProducts().getContent();
+            Collection<Product> products = productRestClient.getAllProducts().getProducts();
 
             customers.forEach(customer -> {
                 Bill bill = Bill.builder().
@@ -51,6 +51,7 @@ public class BillingServiceApplication {
                             quantity(1+new Random().nextInt(10)).
                             unitPrice(product.getPrice()).
                             build();
+                    productItemRepository.save(productItem);
                 });
             });
         };
