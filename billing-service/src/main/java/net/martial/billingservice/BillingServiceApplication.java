@@ -39,7 +39,7 @@ public class BillingServiceApplication {
             Collection<Product> products = productRestClient.getAllProducts().getProducts();
 
             customers.forEach(customer -> {
-                Bill bill = Bill.builder().
+                 Bill bill = Bill.builder().
                         billingDate(new Date()).
                         customerId(customer.getId()).
                         build();
