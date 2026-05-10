@@ -32,28 +32,51 @@ public class BillingServiceApplication {
                                         CustomerRestClient customerRestClient,
                                         ProductRestClient productRestClient) {
         return arg -> {
-            Collection<Customer> customers = customerRestClient
-                    .getAllCustomers()
-                    .getEmbedded()
-                    .getCustomers();
-            Collection<Product> products = productRestClient.getAllProducts().getProducts();
+            if (billRepository.count() > 0) {
+                System.out.println("Data already loaded, skipping.");
+                return;
+            }
 
-            customers.forEach(customer -> {
-                 Bill bill = Bill.builder().
-                        billingDate(new Date()).
-                        customerId(customer.getId()).
-                        build();
-                billRepository.save(bill);
-                products.forEach(product -> {
-                    ProductItem productItem = ProductItem.builder().
-                            bill(bill).
-                            productId(product.getId()).
-                            quantity(1+new Random().nextInt(10)).
-                            unitPrice(product.getPrice()).
-                            build();
-                    productItemRepository.save(productItem);
-                });
-            });
+            boolean loaded = false;
+            int attempts = 0;
+            while (!loaded && attempts < 20) {
+                try {
+                    Collection<Customer> customers = customerRestClient
+                            .getAllCustomers().getEmbedded().getCustomers();
+                    Collection<Product> products = productRestClient
+                            .getAllProducts().getProducts();
+
+                    customers.forEach(customer -> {
+                        Bill bill = Bill.builder()
+                                .billingDate(new Date())
+                                .customerId(customer.getId())
+                                .build();
+                        billRepository.save(bill);
+                        products.forEach(product -> {
+                            ProductItem productItem = ProductItem.builder()
+                                    .bill(bill)
+                                    .productId(product.getId())
+                                    .quantity(1 + new Random().nextInt(10))
+                                    .unitPrice(product.getPrice())
+                                    .build();
+                            productItemRepository.save(productItem);
+                        });
+                    });
+
+                    loaded = true;
+                    System.out.println("✓ Data successfully loaded!");
+
+                } catch (Exception e) {
+                    attempts++;
+                    System.err.println("Attempt " + attempts + "/20 failed: " + e.getMessage());
+                    System.err.println("Retrying in 10s...");
+                    Thread.sleep(10000);
+                }
+            }
+
+            if (!loaded) {
+                System.err.println("FATAL: Could not load data after 20 attempts.");
+            }
         };
     }
 }
